@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import Login from "../src/components/Login";
+import { Container, Title } from "@cacm96/react-component-library";
+import MyAccount from "../src/components/MyAccount";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
+  const { isAuthenticated, getAccessTokenSilently, logout } = useAuth0();
+
+  const checkSession = async () => {
+    const token = await getAccessTokenSilently();
+    if (!token) logout({ returnTo: window.location.origin });
+  };
+
+  const initInterval = () => {
+    setInterval(() => {
+      checkSession();
+    }, 30000);
+  };
+  initInterval();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Title label="My account app" />
+      {isAuthenticated ? <MyAccount /> : <Login />}
+    </Container>
   );
 }
 
